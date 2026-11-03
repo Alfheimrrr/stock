@@ -4,6 +4,9 @@ from features import create_features
 import numpy as np
 from targets import create_target
 from prepare_data import prepare_data
+from models import train_logistic_regression
+from sklearn.metrics import classification_report, accuracy_score
+from sklearn.dummy import DummyClassifier
 
 stocks = {}
 
@@ -28,31 +31,72 @@ for i in range(1,11):
     }
 
 
-for stock_id, datasets in stocks.items():
+entire_x_train = []
+entire_y_train = []
+entire_x_val = []
+entire_y_val = []
 
-    train = datasets['train']
+
+for stock_id, datasets in stocks.items():
+    train = datasets ["train"]
     val = datasets['val']
+
+    if train["Date"].max() >= val["Date"].min():
+        raise ValueError(
+            f"Stock {stock_id}: part 1 and part 2 overlap or out of order"
+        )
+    
 
     combined = pd.concat(
         [train,val],
         ignore_index=True
     )
-    #calculate financial indicators
+
     combined = create_features(combined)
-    #calculate next day prediction target
     combined = create_target(combined)
 
-    stocks[stock_id]['features'] = combined
+    x_train, x_val, y_train, y_val = prepare_data(combined)
 
-for stock_id, datasets in stocks.items():
-    df = datasets["features"]
+    entire_x_train.append(x_train)
+    entire_y_train.append(y_train)
 
-    x_train, x_val, y_train, y_val = prepare_data(df)
-
-    stocks[stock_id]["x_train"] = x_train
-    stocks[stock_id]["x_val"] = x_val
-    stocks[stock_id]["y_train"] = y_train
-    stocks[stock_id]["y_val"] = y_val
-
+    entire_x_val.append(x_val)
+    entire_y_val.append(y_val)
     
+
+x_train = pd.concat(entire_x_train, ignore_index=True)
+y_train = pd.concat(entire_y_train, ignore_index=True)
+
+x_val = pd.concat(entire_x_val, ignore_index=True)
+y_val = pd.concat(entire_y_val, ignore_index=True)
+
+print("combined training observations:", len(x_train))
+
+print("combined val observations:", len(x_val))
+
+model = train_logistic_regression(x_train, y_train)
+
+predictions = model.predict(x_val)
+
+baseline = DummyClassifier(strategy="most_frequent")
+baseline.fit(x_train, y_train)
+
+baseline_predictions = baseline.predict(x_val)
+
+print("\nCombined logistic regression results:")
+
+print(classification_report(
+    y_val,
+    predictions,
+    zero_division=0
+))
+print(
+    "Logistic regression accuracy:",
+    accuracy_score(y_val,predictions)
+)
+
+print(
+    'Baseline accuracy:',
+    accuracy_score(y_val,baseline_predictions)
+)
 
