@@ -1,12 +1,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from features import create_features
-import numpy as np
 from targets import create_target
 from prepare_data import prepare_data
-from models import train_logistic_regression
+from models import train_logistic_regression, train_random_forest, train_xgboost
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.dummy import DummyClassifier
+
 
 stocks = {}
 
@@ -99,4 +99,38 @@ print(
     'Baseline accuracy:',
     accuracy_score(y_val,baseline_predictions)
 )
+rf_model = train_random_forest(x_train, y_train)
+rf_train_predictions = rf_model.predict(x_train)
 
+print("random forest training accuracy", accuracy_score(y_train, rf_train_predictions))
+
+rf_predictions = rf_model.predict(x_val)
+print("\nRandom Forest results:")
+
+print(classification_report(
+    y_val,
+    rf_predictions,
+    zero_division=0
+))
+print(
+    "Random forest accuracy:",
+    accuracy_score(y_val,rf_predictions)
+)
+
+xg_model = train_xgboost(x_train, y_train)
+xg_model_train_predictions = xg_model.predict(x_train)
+
+print("XGBoost training accuracy", accuracy_score(y_train, xg_model_train_predictions))
+
+xg_predictions = xg_model.predict(x_val)
+print("\nXGboost results:")
+
+print(classification_report(
+    y_val,
+    xg_predictions,
+    zero_division=0
+))
+print(
+    "xgboost accuracy:",
+    accuracy_score(y_val,xg_predictions)
+)
