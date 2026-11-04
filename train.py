@@ -9,7 +9,7 @@ from sklearn.dummy import DummyClassifier
 import joblib
 
 
-
+#load both parts of data for each stock
 stocks = {}
 
 for i in range(1,11):
@@ -32,7 +32,7 @@ for i in range(1,11):
         "val" : df2
     }
 
-
+#store the training and validation data for all ten stocks
 entire_x_train = []
 entire_y_train = []
 entire_x_val = []
@@ -41,7 +41,7 @@ entire_y_val = []
 final_x = []
 final_y =[]
 
-
+# calculate features and split each stock in date order
 for stock_id, datasets in stocks.items():
     train = datasets ["train"]
     val = datasets['val']
@@ -67,13 +67,13 @@ for stock_id, datasets in stocks.items():
 
     entire_x_val.append(x_val)
     entire_y_val.append(y_val)
-
+    #keep all usable rows for the final model
     final_data = combined.replace([np.inf, -np.inf], np.nan).dropna()
 
     final_x.append(final_data[x_train.columns])
     final_y.append(final_data["Target"].astype(int))
     
-
+#combine data from all ten stocks into one training set
 x_train = pd.concat(entire_x_train, ignore_index=True)
 y_train = pd.concat(entire_y_train, ignore_index=True)
 
@@ -84,6 +84,7 @@ print("combined training observations:", len(x_train))
 
 print("combined val observations:", len(x_val))
 
+#train and compare different models on the data
 model = train_logistic_regression(x_train, y_train)
 
 predictions = model.predict(x_val)
@@ -112,7 +113,7 @@ print(
 rf_model = train_random_forest(x_train, y_train)
 rf_train_predictions = rf_model.predict(x_train)
 
-print("random forest training accuracy", accuracy_score(y_train, rf_train_predictions))
+print("Random forest training accuracy", accuracy_score(y_train, rf_train_predictions))
 
 rf_predictions = rf_model.predict(x_val)
 print("\nRandom Forest results:")
@@ -152,11 +153,12 @@ svm_pred = svm_model.predict(x_val)
 print("\nSVM results:")
 print(classification_report(y_val, svm_pred))
 print("SVM accuracy:", accuracy_score(y_val,svm_pred))
-
+#retrain the random forest on all data
 final_x = pd.concat(final_x, ignore_index=True)
 final_y = pd.concat(final_y, ignore_index=True)
 random_forest_model_final = train_random_forest(final_x, final_y)
 
+# save the final model and its feature
 joblib.dump(
     {
         "model": random_forest_model_final,
