@@ -5,10 +5,10 @@ def create_features(df):
     # daily returns
     df["Return"] = df["Close"].pct_change()
 
-    #lagged returns
+    #returns from previous trading days
     df["Return_Lag1"] = df["Return"].shift(1)
-
     df["Return_Lag2"] = df["Return"].shift(2)
+
     #simple moving averages
     df["SMA_5"] = df["Close"].rolling(window=5).mean()
     df["SMA_20"] = df["Close"].rolling(window=20).mean()
@@ -30,17 +30,17 @@ def create_features(df):
 
     df["RSI_14"] = 100 - (100 / (1 + rs))
 
-    #MACD
+    #MACD and signal line
     df["MACD"] = df["EMA_12"] - df["EMA_26"]
 
     df["MACD_signal"] = df["MACD"].ewm(span = 9, adjust=False).mean()
     df["MACD_Histogram"] = df["MACD"] - df["MACD_signal"]
-    #`Volatility over 20 days of trading`
+    #Volatility over 20 days of trading
     df["Volatility_20"] = df["Return"].rolling(window=20).std()
 
     #percentage change in trading volume
     df["Volume_change"] = df["Volume"].pct_change()
-    #price range relative to closing price
+    # daily price range relative to closing price
     df["High_low_range"] = (
         (df['High'] - df['Low']) / df['Close']
          

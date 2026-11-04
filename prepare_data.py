@@ -2,7 +2,7 @@ import numpy as np
 
 def prepare_data(df):
     df = df.copy()
-    #split it 80% 20%
+    #split data 80% training 20% validation
     split_index = int(len(df) * 0.8)
 
     train = df.iloc[:split_index].copy()
@@ -14,6 +14,7 @@ def prepare_data(df):
     train = train.replace([np.inf, -np.inf], np.nan).dropna()
     val = val.replace([np.inf, -np.inf], np.nan).dropna()
 
+    #select input features and target values
     feature_columns = [
         col for col in df.columns
         if col not in ["Date", 'Target']

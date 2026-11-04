@@ -1,11 +1,13 @@
+import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from features import create_features
 from targets import create_target
 from prepare_data import prepare_data
-from models import train_logistic_regression, train_random_forest, train_xgboost
+from models import train_logistic_regression, train_random_forest, train_xgboost, train_svm
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.dummy import DummyClassifier
+import joblib
+
 
 
 stocks = {}
@@ -36,6 +38,9 @@ entire_y_train = []
 entire_x_val = []
 entire_y_val = []
 
+final_x = []
+final_y =[]
+
 
 for stock_id, datasets in stocks.items():
     train = datasets ["train"]
@@ -62,6 +67,11 @@ for stock_id, datasets in stocks.items():
 
     entire_x_val.append(x_val)
     entire_y_val.append(y_val)
+
+    final_data = combined.replace([np.inf, -np.inf], np.nan).dropna()
+
+    final_x.append(final_data[x_train.columns])
+    final_y.append(final_data["Target"].astype(int))
     
 
 x_train = pd.concat(entire_x_train, ignore_index=True)
@@ -134,3 +144,25 @@ print(
     "xgboost accuracy:",
     accuracy_score(y_val,xg_predictions)
 )
+
+svm_model = train_svm(x_train,y_train)
+
+svm_pred = svm_model.predict(x_val)
+
+print("\nSVM results:")
+print(classification_report(y_val, svm_pred))
+print("SVM accuracy:", accuracy_score(y_val,svm_pred))
+
+final_x = pd.concat(final_x, ignore_index=True)
+final_y = pd.concat(final_y, ignore_index=True)
+random_forest_model_final = train_random_forest(final_x, final_y)
+
+joblib.dump(
+    {
+        "model": random_forest_model_final,
+        "features": final_x.columns.tolist()
+    },
+    "random_forest_model_final.joblib"
+)
+print("\nRandom Forest with all training data saved")
+print("Training observations:", len(final_x))
