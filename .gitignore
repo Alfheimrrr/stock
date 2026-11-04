@@ -13,3 +13,5 @@ data/
 .env
 
 extra/
+
+*.joblib
