@@ -164,7 +164,7 @@ joblib.dump(
         "model": random_forest_model_final,
         "features": final_x.columns.tolist()
     },
-    "random_forest_model_final.joblib"
+    "models/random_forest_model_final.joblib"
 )
 print("\nRandom Forest with all training data saved")
 print("Training observations:", len(final_x))
