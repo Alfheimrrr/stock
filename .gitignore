@@ -8,8 +8,6 @@ __pycache__/
 
 .vscode/
 
-data/
-
 .env
 
 extra/
