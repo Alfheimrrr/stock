@@ -7,7 +7,7 @@ Logistic Regression, Random Forest, XGBoost, SVM
 Random Forest was selected as the final model.
 
 ## Setup
-Install dependencies through requirements
+Install dependencies through requirements.txt
 
 ## Running the project
 To train and compare models:
