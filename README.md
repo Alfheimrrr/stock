@@ -2,10 +2,7 @@
 Msc project investigating machine learning for predicting stock price direction across ten anonymised stocks.
  
 Models included: 
-Logistic Regression
-Random Forest
-XG Boost
-SVM
+Logistic Regression, Random Forest, XGBoost, SVM
 
 Random Forest was selected as the final model.
 
