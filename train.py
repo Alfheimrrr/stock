@@ -80,10 +80,6 @@ y_train = pd.concat(entire_y_train, ignore_index=True)
 x_val = pd.concat(entire_x_val, ignore_index=True)
 y_val = pd.concat(entire_y_val, ignore_index=True)
 
-print("combined training observations:", len(x_train))
-
-print("combined val observations:", len(x_val))
-
 #train and compare different models on the data
 model = train_logistic_regression(x_train, y_train)
 
@@ -113,8 +109,6 @@ print(
 rf_model = train_random_forest(x_train, y_train)
 rf_train_predictions = rf_model.predict(x_train)
 
-print("Random forest training accuracy", accuracy_score(y_train, rf_train_predictions))
-
 rf_predictions = rf_model.predict(x_val)
 print("\nRandom Forest results:")
 
@@ -123,6 +117,7 @@ print(classification_report(
     rf_predictions,
     zero_division=0
 ))
+print("Random forest training accuracy", accuracy_score(y_train, rf_train_predictions))
 print(
     "Random forest accuracy:",
     accuracy_score(y_val,rf_predictions)
@@ -130,8 +125,6 @@ print(
 
 xg_model = train_xgboost(x_train, y_train)
 xg_model_train_predictions = xg_model.predict(x_train)
-
-print("XGBoost training accuracy", accuracy_score(y_train, xg_model_train_predictions))
 
 xg_predictions = xg_model.predict(x_val)
 print("\nXGboost results:")
@@ -141,8 +134,9 @@ print(classification_report(
     xg_predictions,
     zero_division=0
 ))
+print("XGBoost training accuracy", accuracy_score(y_train, xg_model_train_predictions))
 print(
-    "xgboost accuracy:",
+    "XGboost Accuracy:",
     accuracy_score(y_val,xg_predictions)
 )
 

@@ -89,7 +89,7 @@ if part3_availabe:
     hold_total = sum(holdings)
 
     print("\nTrading strategy results")
-    print(f"Starting balance: £10000")
+    print("Starting balance: £10000")
     print(f"Final balance: £{total:.2f}")
     print(f"Profit / loss: £{total - 10000:.2f}")
     print(f"Return: {(total / 10000 -1) * 100:.2f}%")
